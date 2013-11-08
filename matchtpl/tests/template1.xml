@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="json">
+	<array select="#nav div">
+		<s select="span" get="text"></s>
+		<s select="span" eval="eq(0).text()" ></s>
+		<s select="span" eval="eq(1).text()" ></s>
+		<s eval="find('span').eq(1).text()" ></s>
+		<s select="span" eval="attr('href')" ></s>
+		<s select="span:eq(2)" get="text" ></s>
+	</array>
+	
+	<array select="#content div">
+		<map>
+			<s key="link" select="a" get="text"></s>
+			<s key="href" select="a" eval="attr('href')"></s>
+		</map>
+	</array>
+	<!-- the following is not existed! -->
+	<array select="li">
+		<map>
+			<s key="link" select="a" get="text"></s>
+			<s key="href" select="a" eval="attr('href')"></s>
+		</map>
+	</array>
+	<map select="h1" eval="find('dddd')">
+		<s key="link" select="a" get="text"></s>
+		<s key="href" select="a" eval="attr('href')"></s>
+	</map>
+	<s key="link" select="li" get="text"></s>
+</root>
