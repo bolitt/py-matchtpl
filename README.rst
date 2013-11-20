@@ -6,14 +6,15 @@ A python library to match and extract xml/html source with pre-defined
 template. It provides a convenient and coding-free way for data 
 processing, especially for web page.
 
-The features of py-matchtpl are summarized as follows:
+The features of ``py-matchtpl`` are summarized as follows:
 
 * **Easy to use**. The goal is to help developer ease their text-data processing job. 
-  Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly *CSSSelector*), one popular javascript
-  DOM-manipulation library, is assumed.
+  Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly, *CSSSelector*), one popular javascript
+  DOM-manipulation library, is assumed. User only need to provide the XML-template to
+  tell how to extract information and what the expected output is, then ``py-matchtpl`` will finished the rest.
 
-* **User-friendly**. Our toolkit doesn not require coding in python. If you are going
-  to do a sophisticated work, py-matchtpl can take over dirty things, such as 
+* **User-friendly**. Our toolkit does not require coding in python. If you are to
+  do very sophisticated work, py-matchtpl can take over dirty things, such as 
   parse html file, extract useful information, organize data into preferrable
   data structures, or streaming into *string*/*json*/*yaml*.
   
@@ -22,7 +23,7 @@ The features of py-matchtpl are summarized as follows:
   in most cases. What's more, user can provide *UDF* (user-defined function) to customize in his/her 
   own way. 
 
-The philosophy of py-matchtpl is:
+The fundamental philosophy of ``py-matchtpl`` is:
 
 * **Neat**: keep it clean and hide the dirty things.
 
@@ -43,7 +44,27 @@ Basic data structures
 3. **map**: ``<map></map>``. An key-value based structure, also known as hash or table.
    It can be retrieved by key-like way: *map['name']* or by property-like way: *map.name*.
 
-We believe most data can be organized by using of those data structures or their combinations.
+We believe most data can be fit into those data structures or their combinations.
+
+Keywords & elements
+-------------------------
+
+Here are typical keywords:
+
+* **select**: select target element(s) from document.
+    * selector_string (string): CSS3 Selector to choose target.
+
+* **get**: get internal text | html of target DOM element.
+    * type (string): "text" | "html". 
+
+* **eval**: locally evaluate via python syntax. (Often used to call jquery-like API.)
+    * script_text (string): script using python syntax.
+
+* **default**: default value if none.
+    * value (string): default value.
+
+* **as**: output format in human-readable way.
+    * type (string): str(default) | json | yaml. 
 
 
 Example
@@ -133,9 +154,9 @@ Possible functionalities:
 
 2. Interactive. Interaction with pages: like doing automation/login/testing.
 
-3. Type-casting. Initialize as int/float/object of a class.
+3. Type-casting. convert type into int/float, or direct instantiation of a class.
 
-4. Regex support and some easy UDFs.
+4. Regex support ``/.../`` and some basic UDFs, like split/trim/toUpper/toLower.
 
 
 Contributors
