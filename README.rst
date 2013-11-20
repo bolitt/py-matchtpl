@@ -11,7 +11,8 @@ The features of ``py-matchtpl`` are summarized as follows:
 * **Easy to use**. The goal is to help developer ease their text-data processing job. 
   Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly, *CSSSelector*), one popular javascript
   DOM-manipulation library, is assumed. User only need to provide the XML-template to
-  tell how to extract information and what the expected output is, then ``py-matchtpl`` will finished the rest.
+  tell how to extract information and what the expected output is, then ``py-matchtpl`` will 
+  finish the rest of work.
 
 * **User-friendly**. Our toolkit does not require coding in python. If you are to
   do very sophisticated work, py-matchtpl can take over dirty things, such as 
@@ -41,7 +42,7 @@ Basic data structures
 2. **array**: ``<array></array>``. An ordered list of data, also known as list.
    It can be retrieved by its index: *array[0]*.
 
-3. **map**: ``<map></map>``. An key-value based structure, also known as hash or table.
+3. **map**: ``<map></map>``. A key-value based structure, also known as hash or table.
    It can be retrieved by key-like way: *map['name']* or by property-like way: *map.name*.
 
 We believe most data can be fit into those data structures or their combinations.
