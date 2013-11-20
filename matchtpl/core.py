@@ -12,10 +12,11 @@ __all__ = [
     "MTemplateEnv",
     "MTemplate",
     "MTemplateParser",
-    "MTCaller",
-    "ArrayCaller",
-    "MapCaller",
-    "StringCaller",
+    "MTCallSite",
+    "ArrayCallSite",
+    "MapCallSite",
+    "StringCallSite",
+    "RootCallSite",
 ]
 
 utf8_parser = etree.HTMLParser(encoding='utf-8')
@@ -41,7 +42,7 @@ class MTemplate:
     """ build abstract syntex tree (AST) based on template """
     def __init__(self):
         self.triggers = []
-        self.root_caller = None
+        self.root_CallSite = None
         
     def build(self, env):
         doc = py(env.get_template())
@@ -97,7 +98,7 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = self.triggers
-        self.root = x['exp_caller'] = RootCaller(x)
+        self.root = x['exp_callsite'] = RootCallSite(x)
         
        
     def build_array(self, ele, attrs):
@@ -110,7 +111,7 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = ch
-        x['exp_caller'] = ArrayCaller(x)
+        x['exp_callsite'] = ArrayCallSite(x)
         return x
         
     def build_map(self, ele, attrs):
@@ -124,7 +125,7 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = ch
-        x['exp_caller'] = MapCaller(x)
+        x['exp_callsite'] = MapCallSite(x)
         return x
         
     def build_string(self, ele, attrs):
@@ -134,18 +135,18 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = []
-        x['exp_caller'] = StringCaller(x)
+        x['exp_callsite'] = StringCallSite(x)
         return x
 
 #######################################################
-# Callers: abstract syntex tree(AST) caller
-class MTCaller:
+# CallSites: abstract syntex tree(AST) callsite
+class MTCallSite:
     def __init__(self, exp):
         self.exp = exp
-        self.meta = "Caller_" + exp['exp_meta']
+        self.meta = "CallSite_" + exp['exp_meta']
         self.attrs = exp['exp_attrs']
         self.children = exp['exp_children']
-        self.caller = self
+        self.callsite = self
         
     def do(self, context):
         pass
@@ -187,9 +188,9 @@ class MTCaller:
     def __str__(self):
         return self.meta
 
-class ArrayCaller(MTCaller):
+class ArrayCallSite(MTCallSite):
     def __init__(self, exp):
-        MTCaller.__init__(self, exp)
+        MTCallSite.__init__(self, exp)
     
     def do(self, element):
         ch = []
@@ -206,13 +207,13 @@ class ArrayCaller(MTCaller):
             for child_context in context:
                 #print "array:", py(child_context)
                 for child in self.children:
-                    caller = child['exp_caller']
-                    ch.append(caller.do(child_context))
+                    callsite = child['exp_callsite']
+                    ch.append(callsite.do(child_context))
         return ch
 
-class MapCaller(MTCaller):
+class MapCallSite(MTCallSite):
     def __init__(self, exp):
-        MTCaller.__init__(self, exp)
+        MTCallSite.__init__(self, exp)
 
     def do(self, element):
         ch = {}
@@ -228,15 +229,15 @@ class MapCaller(MTCaller):
             child_context = context
             #print "map child:", py(child_context)
             for child in self.children:
-                caller = child['exp_caller']
-                if caller.has_attr('key'):
-                    key = caller.attrs['key']
-                    ch[key] = caller.do(child_context)
+                callsite = child['exp_callsite']
+                if callsite.has_attr('key'):
+                    key = callsite.attrs['key']
+                    ch[key] = callsite.do(child_context)
         return ch
 
-class StringCaller(MTCaller):
+class StringCallSite(MTCallSite):
     def __init__(self, exp):
-        MTCaller.__init__(self, exp)
+        MTCallSite.__init__(self, exp)
     
     def do(self, element):
         child_context = self.select(element)
@@ -259,15 +260,15 @@ class StringCaller(MTCaller):
             ret_val = self.default(default_val)
         return ret_val
 
-class RootCaller(MTCaller):
+class RootCallSite(MTCallSite):
     def __init__(self, exp):
-        MTCaller.__init__(self, exp)
+        MTCallSite.__init__(self, exp)
 
     def do(self, doc, **environment):
         root_element = py(doc)
         results = []
         for tri in self.children:
-            r = tri['exp_caller'].do(root_element)
+            r = tri['exp_callsite'].do(root_element)
             results.append(r)
 
         # action:
@@ -289,7 +290,7 @@ class RootCaller(MTCaller):
             return str(results)
         elif as_val == "json":
             return json.dumps(results,
-                        encoding='utf-8', ensure_ascii=True, indent=4, sort_keys=True, )
+                        encoding='utf-8', ensure_ascii=False, indent=4, sort_keys=True, )
         elif as_val == "yaml":
             return yaml.dump(results, 
                         encoding='utf-8', allow_unicode=True, default_flow_style=False,

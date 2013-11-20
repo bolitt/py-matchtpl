@@ -45,7 +45,7 @@ classifiers = [
 setup(
     name = 'matchtpl',
     version = matchtpl.__version__,
-    author = 'bolitt',
+    author = 'Tian L.',
     author_email = 'bolitt@gmail.com',
     url = 'https://github.com/bolitt/py-matchtpl.git',
     license = 'BSD license',

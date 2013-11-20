@@ -6,17 +6,24 @@ A python library to match and extract xml/html source with pre-defined
 template. It provides a convenient and coding-free way for data 
 processing, especially for web page.
 
-Towel Stuff provides such and such and so and so. You might find
+Take html as example. Matchtpl provides a easy way to parse your html file
+and format output. You might find
 it most useful for tasks involving <x> and also <y>. Typical usage
 often looks like this::
 
     #!/usr/bin/env python
 
-    from towelstuff import location
-    from towelstuff import utils
-
-    if utils.has_towel():
-        print "Your towel is located:", location.where_is_my_towel()
+    from match import MTemplateEnv, MTemplate, MTemplateParser
+	
+    if __name__ == '__main__':
+        # initialize environment
+        env = MTemplateEnv(template = 'tpl_amazon.xml')
+        # build template
+        tpl = MTemplate()
+        tpl.build(env)
+        # initialize parser and parse
+        parser = MTemplateParser(tpl)
+        results = parser.parse('amazon.html')
 
 (Note the double-colon and 4-space indent formatting above.)
 

@@ -49,29 +49,20 @@ def test_action_template():
     print results
     print "[/Results]"
 
-def test_5i5j_template():
-    env = MTemplateEnv(template = '5i5j_exchange.xml')
+def test_amazon_template():
+    env = MTemplateEnv(template = 'amazon_template.xml')
     t = MTemplate()
     t.build(env)
     print t.root
     
     parser = MTemplateParser(t)
-    results = parser.parse("5i5j_exchange.html")
+    results = parser.parse("amazon.html")
     
     print "[Results]"
-    pprint(results)
+    print results
     print "[/Results]"
-    with codecs.open("5i5jexchange.txt", 'w', "utf-8") as f:
-        for house in results[0]:
-            f.write(u"%s\r\n" % house['title'])
-            for k,v in house.iteritems():
-                v = v.strip() # strip begin and end
-                v = re.sub('\\s{2,}', '', v.strip()) # replace empty space >= 2
-                f.write(u"%s\t%s\r\n" % (k, v))
-            f.write("\r\n")
-        f.close()
 
 if __name__ == "__main__":
     test_mytemplate()
     test_action_template()
-    test_5i5j_template()
+    test_amazon_template()
