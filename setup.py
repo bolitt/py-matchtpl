@@ -29,7 +29,6 @@ News
 
 """ % read('README', 'CHANGES')
 
-print long_description
 
 classifiers = [
     'Programming Language :: Python',
