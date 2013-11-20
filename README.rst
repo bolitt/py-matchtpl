@@ -46,6 +46,7 @@ Basic data structures
 
 We believe most data can be fit into those data structures or their combinations.
 
+
 Keywords & elements
 -------------------------
 
@@ -65,6 +66,18 @@ Here are typical keywords:
 
 * **as**: output format in human-readable way.
     * type (string): str(default) | json | yaml. 
+
+(Keywords are not limited as above.)
+
+
+And extensible elements are:
+
+* Strucuture element: ``<s></s>``, ``<array></array>``, ``<map></map>`` (see: above).
+
+* Root element: ``<root></root>``. Act as serilization class, and provide multiple formats to output result.
+
+* Customized element: ``<action></action>``, where *action* here can be other non-conflictive tag. *action* is a
+  customized action provide by user when calling *parser.parse(..., {'action': some_function})*.
 
 
 Example
@@ -156,7 +169,7 @@ Possible functionalities:
 
 3. Type-casting. convert type into int/float, or direct instantiation of a class.
 
-4. Regex support ``/.../`` and some basic UDFs, like split/trim/toUpper/toLower.
+4. Regex support ``/^abcd/ABCD/g`` and some basic UDFs, like split/trim/toUpper/toLower.
 
 
 Contributors
