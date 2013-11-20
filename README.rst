@@ -11,12 +11,13 @@ The features of ``py-matchtpl`` are summarized as follows:
 * **Easy to use**. The goal is to help developer ease their text-data processing job. 
   Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly, *CSSSelector*), one popular javascript
   DOM-manipulation library, is assumed. User only need to provide the XML-template to
-  tell how to extract information and what the expected output is, then ``py-matchtpl`` will finished the rest.
+  tell how to extract information and what the expected output is, then ``py-matchtpl`` will 
+  finish the rest of work.
 
 * **User-friendly**. Our toolkit does not require coding in python. If you are to
   do very sophisticated work, py-matchtpl can take over dirty things, such as 
   parse html file, extract useful information, organize data into preferrable
-  data structures, or streaming into *string*/*json*/*yaml*.
+  data structures, or streaming into *string* (plaintext) / `json <http://www.json.org/>`_ / `yaml <http://yaml.org/>`.
   
 * **Extensibilty**. Currently, it supports three basic types of data structures: 
   (1) *string*; (2) *array*; (3) *map*. We can utilize their combination to meet the requirements
@@ -31,6 +32,25 @@ The fundamental philosophy of ``py-matchtpl`` is:
 
 * **Extensible**: leave imagination to user, and any ideas can be integrated in a rapid way.
 
+Installation
+=====================
+
+You can install the latest package from source (or, download and unzip from github)::
+
+  $ git clone https://github.com/bolitt/py-matchtpl.git
+  
+  $ python setup.py install
+
+
+or use python easy_install or pip::
+
+  $ easy_install py-matchtpl
+
+  $ # or install by PyPI
+
+  $ pip install py-matchtpl
+
+
 
 Basic data structures
 =====================
@@ -41,7 +61,7 @@ Basic data structures
 2. **array**: ``<array></array>``. An ordered list of data, also known as list.
    It can be retrieved by its index: *array[0]*.
 
-3. **map**: ``<map></map>``. An key-value based structure, also known as hash or table.
+3. **map**: ``<map></map>``. A key-value based structure, also known as hash or table.
    It can be retrieved by key-like way: *map['name']* or by property-like way: *map.name*.
 
 We believe most data can be fit into those data structures or their combinations.
@@ -120,7 +140,7 @@ config file to indicates the meta information of the target
 parser will use the template to guide its processing, and 
 output the result::
 
-    <!-- serilize result as json. (other format is also support) -->
+    <!-- serilize result as json. (other format is also supported) -->
     <root as="json">
         <!-- the collection of entries are started with 'result_*' in their IDs,
              and each entry is a map -->
@@ -131,7 +151,7 @@ output the result::
                 <s key="info" select="h3 span.med" get="text" />
                 <!-- image: get src link in jquery-like way -->
                 <s key="image" select="div.image img.productImage" eval="attr('src')" />
-                <!-- price: psedu-class of CSSSelector is used -->
+                <!-- price: pseudo-class of CSSSelector is used -->
                 <s key="price" select="li.newp span:eq(0)" get="text" />
                 <!-- review: default value is enabled -->
                 <s key="review" select="span.asinReviewsSummary a" eval="attr('alt')" default='0' />
@@ -158,8 +178,8 @@ After execution, the output is organized as json::
 (At present, json, yaml and plaintext (by default) are allowed. More format will be supported later.)
 
 
-Further scenarios
--------------------
+Future scenarios
+=================
 
 Possible functionalities:
 
