@@ -8,40 +8,40 @@ processing, especially for web page.
 
 The features of py-matchtpl are summarized as follows:
 
-* Easy to use. The goal is to help developer ease their text-data processing job. 
-  Only basic knowledge of `*jQuery* <http://jquery.com>`_ (mostly **CSSSelector**), one popular javascript
+* **Easy to use**. The goal is to help developer ease their text-data processing job. 
+  Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly *CSSSelector*), one popular javascript
   DOM-manipulation library, is assumed.
 
-* User-friendly. Our toolkit doesn not require coding in python. If you are going
+* **User-friendly**. Our toolkit doesn not require coding in python. If you are going
   to do a sophisticated work, py-matchtpl can take over dirty things, such as 
   parse html file, extract useful information, organize data into preferrable
-  data structures, or streaming into string/json/yaml.
+  data structures, or streaming into *string*/*json*/*yaml*.
   
-* Extensibilty. Currently, it supports three basic types of data structures: 
-  (1) string; (2) array; (3) map. We can utilize their combination to meet the requirements
-  in most cases. Also, user can provide UDF (user-defined function) to customize in his/her 
-  own way.
+* **Extensibilty**. Currently, it supports three basic types of data structures: 
+  (1) *string*; (2) *array*; (3) *map*. We can utilize their combination to meet the requirements
+  in most cases. What's more, user can provide *UDF* (user-defined function) to customize in his/her 
+  own way. 
 
 The philosophy of py-matchtpl is:
 
-* *Neat*: keep it clean and hide the dirty things.
+* **Neat**: keep it clean and hide the dirty things.
 
-* *Simple*: everything looks configurable, declarative and intuitive. (avoid to use complex control flow syntax: ``if``/``for``/``while``.)
+* **Simple**: everything looks configurable, declarative and intuitive. (avoid to use complex control flow syntax: ``if``/``for``/``while``.)
 
-* *Extensible*: leave imagination to user, and any ideas can be integrated in a rapid way.
+* **Extensible**: leave imagination to user, and any ideas can be integrated in a rapid way.
 
 
 Basic data structures
 =====================
 
 1. **string**: ``<s></s>``. Typical atom structure, can be post-processed and
-  converted into other types, like ``int``, ``float`` and etc.
+   converted into other types, like ``int``, ``float`` and etc.
 
 2. **array**: ``<array></array>``. An ordered list of data, also known as list.
-  It can be retrieved by its index: *array[0]*.
+   It can be retrieved by its index: *array[0]*.
 
 3. **map**: ``<map></map>``. An key-value based structure, also known as hash or table.
-  It can be retrieved by key-like way: *map['name']* or by property-like way: *map.name*.
+   It can be retrieved by key-like way: *map['name']* or by property-like way: *map.name*.
 
 We believe most data can be organized by using of those data structures or their combinations.
 
@@ -86,23 +86,27 @@ config file to indicates the meta information of the target
 parser will use the template to guide its processing, and 
 output the result::
 
-    <!-- serilize result as json. (can be changed to other format) -->
+    <!-- serilize result as json. (other format is also support) -->
     <root as="json">
-        <!-- the collection of entries are started with 'result_*' as their id,
+        <!-- the collection of entries are started with 'result_*' in their IDs,
              and each entry is a map -->
         <array select="div[id^='result_']" >
 	    <map>
+                <!-- title: get internal text as result -->
                 <s key="title" select="h3 span.lrg" get="text" />
                 <s key="info" select="h3 span.med" get="text" />
+                <!-- image: get src link in jquery-like way -->
                 <s key="image" select="div.image img.productImage" eval="attr('src')" />
+                <!-- price: psedu-class of CSSSelector is used -->
                 <s key="price" select="li.newp span:eq(0)" get="text" />
-                <s key="review" select="span.asinReviewsSummary a" eval="attr('alt')" />
+                <!-- review: default value is enabled -->
+                <s key="review" select="span.asinReviewsSummary a" eval="attr('alt')" default='0' />
             </map>
         </array>
     </root>
 
 
-After execution, the output is organized as json text::
+After execution, the output is organized as json::
 
     [
         [
@@ -113,11 +117,11 @@ After execution, the output is organized as json text::
                 "review": "平均4.4 星", 
                 "title": "总经理财务一本通"
             }, 
-            // up to 25 map results
+            // up to 25 results: map
         ]
     ]
 
-(Now it supports json, yaml and plaintext.)
+(At present, json, yaml and plaintext (by default) are allowed. More format will be supported later.)
 
 
 Further scenarios
