@@ -1,6 +1,6 @@
-===========
-py-matchtpl
-===========
+=======================================================
+py-matchtpl: a library for xml/html template matching
+=======================================================
 
 A python library to match and extract xml/html source with pre-defined 
 template. It provides a convenient and coding-free way for data 
@@ -52,8 +52,8 @@ or use python easy_install or pip::
 
 
 
-Basic data structures
-=====================
+Basic Data Structures
+======================
 
 1. **string**: ``<s></s>``. Typical atom structure, can be post-processed and
    converted into other types, like ``int``, ``float`` and etc.
@@ -67,7 +67,7 @@ Basic data structures
 We believe most data can be fit into those data structures or their combinations.
 
 
-Keywords & elements
+Keywords & Elements
 -------------------------
 
 Here are typical keywords:
@@ -100,7 +100,7 @@ And extensible elements are:
   customized action provide by user when calling *parser.parse(..., {'action': some_function})*.
 
 
-Example
+Quick Start
 =====================
 
 The example shows how to extract data from html source. 
@@ -109,7 +109,7 @@ and format output. It is a real case to extract products
 information from web page of amazon.com.
 
 
-Python code
+Python Code
 ------------------------
 
 In python, typical usage often looks like this::
@@ -131,7 +131,7 @@ In python, typical usage often looks like this::
         results = parser.parse('amazon.html')
 
 
-Configurable template
+Configurable Template
 ------------------------
 
 The pre-defined template is written in xml, which acts as a
@@ -166,10 +166,10 @@ After execution, the output is organized as json::
         [
             {
                 "image": "http://ec4.images-amazon.com/images/I/516Vhic-I9L._AA160_.jpg", 
-                "info": "ÁõÑÇÀò ¹ã¶«Ê¡³ö°æ¼¯ÍÅ£¬¹ã¶«¾­¼Ã³ö°æÉç  (2011-05) - Kindleµç×ÓÊé", 
-                "price": "£¤1.99", 
-                "review": "Æ½¾ù4.4 ÐÇ", 
-                "title": "×Ü¾­Àí²ÆÎñÒ»±¾Í¨"
+                "info": "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ã¶«Ê¡ï¿½ï¿½ï¿½æ¼¯ï¿½Å£ï¿½ï¿½ã¶«ï¿½ï¿½ï¿½Ã³ï¿½ï¿½ï¿½ï¿½ï¿½  (2011-05) - Kindleï¿½ï¿½ï¿½ï¿½ï¿½ï¿½", 
+                "price": "ï¿½ï¿½1.99", 
+                "review": "Æ½ï¿½ï¿½4.4 ï¿½ï¿½", 
+                "title": "ï¿½Ü¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½Í¨"
             }, 
             // up to 25 results: map
         ]
@@ -178,7 +178,7 @@ After execution, the output is organized as json::
 (At present, json, yaml and plaintext (by default) are allowed. More format will be supported later.)
 
 
-Future scenarios
+Future Scenarios
 =================
 
 Possible functionalities:
