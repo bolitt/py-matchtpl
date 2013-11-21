@@ -20,7 +20,7 @@ def read(*names):
 long_description = """
 %(README)s
 
-See http://packages.python.org/???/ for the full documentation
+See https://pypi.python.org/pypi/matchtpl for the full documentation
 
 News
 ====

@@ -17,7 +17,7 @@ The features of ``py-matchtpl`` are summarized as follows:
 * **User-friendly**. Our toolkit does not require coding in python. If you are to
   do very sophisticated work, py-matchtpl can take over dirty things, such as 
   parse html file, extract useful information, organize data into preferrable
-  data structures, or streaming into *string* (plaintext) / `json <http://www.json.org/>`_ / `yaml <http://yaml.org/>`.
+  data structures, or streaming into *string* (plaintext) / `json <http://www.json.org/>`_ / `yaml <http://yaml.org/>`_.
   
 * **Extensibilty**. Currently, it supports three basic types of data structures: 
   (1) *string*; (2) *array*; (3) *map*. We can utilize their combination to meet the requirements
