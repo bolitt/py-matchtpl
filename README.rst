@@ -44,11 +44,11 @@ You can install the latest package from source (or, download and unzip from gith
 
 or use python easy_install or pip::
 
-  $ easy_install py-matchtpl
+  $ easy_install matchtpl
 
   # alternatively install by pip
 
-  $ pip install py-matchtpl
+  $ pip install matchtpl
 
 
 
@@ -116,7 +116,7 @@ In python, typical usage often looks like this::
 
     #!/usr/bin/env python
 
-    from match import MTemplateEnv, MTemplate, MTemplateParser
+    from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
 	
     if __name__ == '__main__':
         # initialize environment
@@ -190,6 +190,12 @@ Possible functionalities:
 3. Type-casting. convert type into int/float, or direct instantiation of a class.
 
 4. Regex support ``/^abcd/ABCD/g`` and some basic UDFs, like split/trim/toUpper/toLower.
+
+Project Links
+==============
+**Package Release**: https://pypi.python.org/pypi/matchtpl
+
+**Source Code**: https://github.com/bolitt/py-matchtpl.git 
 
 
 Contributors
