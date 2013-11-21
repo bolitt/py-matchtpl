@@ -1,6 +1,6 @@
-=======================================================
-py-matchtpl: a library for xml/html template matching
-=======================================================
+========================================
+py-matchtpl: xml/html matching template
+========================================
 
 A python library to match and extract xml/html source with pre-defined 
 template. It provides a convenient and coding-free way for data 
@@ -46,14 +46,14 @@ or use python easy_install or pip::
 
   $ easy_install py-matchtpl
 
-  $ # or install by PyPI
+  # alternatively install by pip
 
   $ pip install py-matchtpl
 
 
 
 Basic Data Structures
-======================
+=====================
 
 1. **string**: ``<s></s>``. Typical atom structure, can be post-processed and
    converted into other types, like ``int``, ``float`` and etc.
@@ -166,10 +166,10 @@ After execution, the output is organized as json::
         [
             {
                 "image": "http://ec4.images-amazon.com/images/I/516Vhic-I9L._AA160_.jpg", 
-                "info": "������ �㶫ʡ���漯�ţ��㶫���ó�����  (2011-05) - Kindle������", 
-                "price": "��1.99", 
-                "review": "ƽ��4.4 ��", 
-                "title": "�ܾ�������һ��ͨ"
+                "info": "刘亚莉 广东省出版集团，广东经济出版社  (2011-05) - Kindle电子书", 
+                "price": "￥1.99", 
+                "review": "平均4.4 星", 
+                "title": "总经理财务一本通"
             }, 
             // up to 25 results: map
         ]
