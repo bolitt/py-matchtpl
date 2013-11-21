@@ -1,5 +1,4 @@
-========================================
-py-matchtpl: xml/html matching template
+py-matchtpl: xml/html matching library
 ========================================
 
 A python library to match and extract xml/html source with pre-defined 
