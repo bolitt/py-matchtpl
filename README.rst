@@ -6,25 +6,25 @@ A python library to match and extract xml/html source with pre-defined
 template. It provides a convenient and coding-free way for data 
 processing, especially for web page.
 
-The features of ``py-matchtpl`` are summarized as follows:
+The features of ``matchtpl`` are summarized as follows:
 
 * **Easy to use**. The goal is to help developer ease their text-data processing job. 
   Only basic knowledge of `jQuery <http://jquery.com>`_ (mostly, *CSSSelector*), one popular javascript
   DOM-manipulation library, is assumed. User only need to provide the XML-template to
-  tell how to extract information and what the expected output is, then ``py-matchtpl`` will 
-  finish the rest of work.
+  tell how to extract information and what the expected output is, then ``matchtpl`` will 
+  finish the rest of the work.
 
 * **User-friendly**. Our toolkit does not require coding in python. If you are to
   do very sophisticated work, py-matchtpl can take over dirty things, such as 
   parse html file, extract useful information, organize data into preferrable
-  data structures, or streaming into *string* (plaintext) / `json <http://www.json.org/>`_ / `yaml <http://yaml.org/>`_.
+  data structures, or streaming into *string* (plaintext) / `json <http://www.json.org/>`_ / `yaml <http://yaml.org/>`_ / python builtin structures (by default).
   
 * **Extensibilty**. Currently, it supports three basic types of data structures: 
   (1) *string*; (2) *array*; (3) *map*. We can utilize their combination to meet the requirements
   in most cases. What's more, user can provide *UDF* (user-defined function) to customize in his/her 
   own way. 
 
-The fundamental philosophy of ``py-matchtpl`` is:
+The fundamental philosophy of ``matchtpl`` is:
 
 * **Neat**: keep it clean and hide the dirty things.
 
@@ -85,7 +85,7 @@ Here are typical keywords:
     * value (string): default value.
 
 * **as**: output format in human-readable way.
-    * type (string): str(default) | json | yaml. 
+    * type (string): str | json | yaml. If not provided, will return python builtin data strucutures.
 
 (Keywords are not limited as above.)
 
@@ -175,7 +175,7 @@ After execution, the output is organized as json::
         ]
     ]
 
-(At present, json, yaml and plaintext (by default) are allowed. More format will be supported later.)
+(At present, json, yaml, plaintext or python builtin structures are allowed. More format will be supported later.)
 
 
 Future Scenarios
