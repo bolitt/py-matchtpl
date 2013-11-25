@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Py-matchtpl by bolitt</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Py-matchtpl</h1>
+        <h2>A python library to match and extract xml/html source with pre-defined template. It provides a convenient and coding-free way for data processing, especially for web page.</h2>
+        <a href="https://github.com/bolitt/py-matchtpl" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1></h1>
+
+<h1>
+<a name="py-matchtpl-xmlhtml-matching-library" class="anchor" href="#py-matchtpl-xmlhtml-matching-library"><span class="octicon octicon-link"></span></a>py-matchtpl: xml/html matching library</h1>
+
+<p>A python library to match and extract xml/html source with pre-defined 
+template. It provides a convenient and coding-free way for data 
+processing, especially for web page.</p>
+
+<p>The features of <code>matchtpl</code> are summarized as follows:</p>
+
+<ul>
+<li><p><strong>Easy to use</strong>. The goal is to help developer ease their text-data processing job. 
+Only basic knowledge of <code>jQuery &lt;http://jquery.com&gt;</code>_ (mostly, <em>CSSSelector</em>), one popular javascript
+DOM-manipulation library, is assumed. User only need to provide the XML-template to
+tell how to extract information and what the expected output is, then <code>matchtpl</code> will 
+finish the rest of the work.</p></li>
+<li><p><strong>User-friendly</strong>. Our toolkit does not require coding in python. If you are to
+do very sophisticated work, py-matchtpl can take over dirty things, such as 
+parse html file, extract useful information, organize data into preferrable
+data structures, or streaming into <em>string</em> (plaintext) / <code>json &lt;http://www.json.org/&gt;</code>_ / <code>yaml &lt;http://yaml.org/&gt;</code>_ / python builtin structures (by default).</p></li>
+<li><p><strong>Extensibilty</strong>. Currently, it supports three basic types of data structures: 
+(1) <em>string</em>; (2) <em>array</em>; (3) <em>map</em>. We can utilize their combination to meet the requirements
+in most cases. What's more, user can provide <em>UDF</em> (user-defined function) to customize in his/her 
+own way. </p></li>
+</ul><p>The fundamental philosophy of <code>matchtpl</code> is:</p>
+
+<ul>
+<li><p><strong>Neat</strong>: keep it clean and hide the dirty things.</p></li>
+<li><p><strong>Simple</strong>: everything looks configurable, declarative and intuitive. (avoid to use complex control flow syntax: <code>if</code>/<code>for</code>/<code>while</code>.)</p></li>
+<li><p><strong>Extensible</strong>: leave imagination to user, and any ideas can be integrated in a rapid way.</p></li>
+</ul><h1>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h1>
+
+<p>You can install the latest package from source (or, download and unzip from github)::</p>
+
+<p>$ git clone <a href="https://github.com/bolitt/py-matchtpl.git">https://github.com/bolitt/py-matchtpl.git</a></p>
+
+<p>$ python setup.py install</p>
+
+<p>or use python easy_install or pip::</p>
+
+<p>$ easy_install matchtpl</p>
+
+<p># alternatively install by pip</p>
+
+<p>$ pip install matchtpl</p>
+
+<h1>
+<a name="basic-data-structures" class="anchor" href="#basic-data-structures"><span class="octicon octicon-link"></span></a>Basic Data Structures</h1>
+
+<ol>
+<li><p><strong>string</strong>: <code>&lt;s&gt;&lt;/s&gt;</code>. Typical atom structure, can be post-processed and
+converted into other types, like <code>int</code>, <code>float</code> and etc.</p></li>
+<li><p><strong>array</strong>: <code>&lt;array&gt;&lt;/array&gt;</code>. An ordered list of data, also known as list.
+It can be retrieved by its index: <em>array[0]</em>.</p></li>
+<li><p><strong>map</strong>: <code>&lt;map&gt;&lt;/map&gt;</code>. A key-value based structure, also known as hash or table.
+It can be retrieved by key-like way: <em>map['name']</em> or by property-like way: <em>map.name</em>.</p></li>
+</ol><p>We believe most data can be fit into those data structures or their combinations.</p>
+
+<h2>
+<a name="keywords--elements" class="anchor" href="#keywords--elements"><span class="octicon octicon-link"></span></a>Keywords &amp; Elements</h2>
+
+<p>Here are typical keywords:</p>
+
+<ul>
+<li>
+<p><strong>select</strong>: select target element(s) from document.</p>
+
+<ul>
+<li>selector_string (string): CSS3 Selector to choose target.</li>
+</ul>
+</li>
+<li>
+<p><strong>get</strong>: get internal text | html of target DOM element.</p>
+
+<ul>
+<li>type (string): "text" | "html". </li>
+</ul>
+</li>
+<li>
+<p><strong>eval</strong>: locally evaluate via python syntax. (Often used to call jquery-like API.)</p>
+
+<ul>
+<li>script_text (string): script using python syntax.</li>
+</ul>
+</li>
+<li>
+<p><strong>default</strong>: default value if none.</p>
+
+<ul>
+<li>value (string): default value.</li>
+</ul>
+</li>
+<li>
+<p><strong>as</strong>: output format in human-readable way.</p>
+
+<ul>
+<li>type (string): str | json | yaml. If not provided, will return python builtin data strucutures.</li>
+</ul>
+</li>
+</ul><p>(Keywords are not limited as above.)</p>
+
+<p>And extensible elements are:</p>
+
+<ul>
+<li><p>Strucuture element: <code>&lt;s&gt;&lt;/s&gt;</code>, <code>&lt;array&gt;&lt;/array&gt;</code>, <code>&lt;map&gt;&lt;/map&gt;</code> (see: above).</p></li>
+<li><p>Root element: <code>&lt;root&gt;&lt;/root&gt;</code>. Act as serilization class, and provide multiple formats to output result.</p></li>
+<li><p>Customized element: <code>&lt;action&gt;&lt;/action&gt;</code>, where <em>action</em> here can be other non-conflictive tag. <em>action</em> is a
+customized action provide by user when calling <em>parser.parse(..., {'action': some_function})</em>.</p></li>
+</ul><h1>
+<a name="quick-start" class="anchor" href="#quick-start"><span class="octicon octicon-link"></span></a>Quick Start</h1>
+
+<p>The example shows how to extract data from html source. 
+Matchtpl provides an easy way to parse your html file
+and format output. It is a real case to extract products
+information from web page of amazon.com.</p>
+
+<h2>
+<a name="python-code" class="anchor" href="#python-code"><span class="octicon octicon-link"></span></a>Python Code</h2>
+
+<p>In python, typical usage often looks like this::</p>
+
+<pre><code>#!/usr/bin/env python
+
+from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
+
+if __name__ == '__main__':
+    # initialize environment
+    env = MTemplateEnv(template = 'tpl_amazon.xml')
+
+    # build template
+    tpl = MTemplate()
+    tpl.build(env)
+
+    # initialize parser and parse
+    parser = MTemplateParser(tpl)
+    results = parser.parse('amazon.html')
+</code></pre>
+
+<h2>
+<a name="configurable-template" class="anchor" href="#configurable-template"><span class="octicon octicon-link"></span></a>Configurable Template</h2>
+
+<p>The pre-defined template is written in xml, which acts as a
+config file to indicates the meta information of the target 
+(usually another html/xml file or stream). Then,
+parser will use the template to guide its processing, and 
+output the result::</p>
+
+<pre><code>&lt;!-- serilize result as json. (other format is also supported) --&gt;
+&lt;root as="json"&gt;
+    &lt;!-- the collection of entries are started with 'result_*' in their IDs,
+         and each entry is a map --&gt;
+    &lt;array select="div[id^='result_']" &gt;
+    &lt;map&gt;
+            &lt;!-- title: get internal text as result --&gt;
+            &lt;s key="title" select="h3 span.lrg" get="text" /&gt;
+            &lt;s key="info" select="h3 span.med" get="text" /&gt;
+            &lt;!-- image: get src link in jquery-like way --&gt;
+            &lt;s key="image" select="div.image img.productImage" eval="attr('src')" /&gt;
+            &lt;!-- price: pseudo-class of CSSSelector is used --&gt;
+            &lt;s key="price" select="li.newp span:eq(0)" get="text" /&gt;
+            &lt;!-- review: default value is enabled --&gt;
+            &lt;s key="review" select="span.asinReviewsSummary a" eval="attr('alt')" default='0' /&gt;
+        &lt;/map&gt;
+    &lt;/array&gt;
+&lt;/root&gt;
+</code></pre>
+
+<p>After execution, the output is organized as json::</p>
+
+<pre><code>[
+    [
+        {
+            "image": "http://ec4.images-amazon.com/images/I/516Vhic-I9L._AA160_.jpg", 
+            "info": "刘亚莉 广东省出版集团，广东经济出版社  (2011-05) - Kindle电子书", 
+            "price": "￥1.99", 
+            "review": "平均4.4 星", 
+            "title": "总经理财务一本通"
+        }, 
+        // up to 25 results: map
+    ]
+]
+</code></pre>
+
+<p>(At present, json, yaml, plaintext or python builtin structures are allowed. More format will be supported later.)</p>
+
+<h1>
+<a name="future-scenarios" class="anchor" href="#future-scenarios"><span class="octicon octicon-link"></span></a>Future Scenarios</h1>
+
+<p>Possible functionalities:</p>
+
+<ol>
+<li><p>Unix-like pipe: <code>|</code>. Just concatenate output|input step by step.</p></li>
+<li><p>Interactive. Interaction with pages: like doing automation/login/testing.</p></li>
+<li><p>Type-casting. convert type into int/float, or direct instantiation of a class.</p></li>
+<li><p>Regex support <code>/^abcd/ABCD/g</code> and some basic UDFs, like split/trim/toUpper/toLower.</p></li>
+</ol><h1>
+<a name="project-links" class="anchor" href="#project-links"><span class="octicon octicon-link"></span></a>Project Links</h1>
+
+<p><strong>Package Release</strong>: <a href="https://pypi.python.org/pypi/matchtpl">https://pypi.python.org/pypi/matchtpl</a></p>
+
+<p><strong>Source Code</strong>: <a href="https://github.com/bolitt/py-matchtpl.git">https://github.com/bolitt/py-matchtpl.git</a> </p>
+
+<h1>
+<a name="contributors" class="anchor" href="#contributors"><span class="octicon octicon-link"></span></a>Contributors</h1>
+
+<ul>
+<li>v0.1    Tian Lin<a href="mailto:bolitt@gmail.com">bolitt@gmail.com</a>
+Initialize the project, and alpha release of the library.</li>
+</ul><p><em>Any contributions are welcome!</em></p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/bolitt/py-matchtpl/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/bolitt/py-matchtpl/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/bolitt/py-matchtpl"></a> is maintained by <a href="https://github.com/bolitt">bolitt</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
