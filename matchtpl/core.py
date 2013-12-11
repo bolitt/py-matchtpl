@@ -29,23 +29,32 @@ def _load_file_(path):
 
 class MTemplateEnv:
     """ default environment of template """
-    def __init__(self, template):
+    def __init__(self, template = None, stream = None):
         self.parser = etree.XMLParser(encoding='utf-8', remove_comments=True)
-        self.template = template
+        if file is not None:
+            self.template = self.build_env_file(template)
+        elif content is not None:
+            self.template = self.build_env_content(stream)
+        else:
+            raise Exception('[Error] Both file and stream are None')
         
-    def get_template(self):
-        content = _load_file_(self.template)
-        content = etree.fromstring(content, parser = self.parser)
-        return content
+    def build_env_file(self, file):
+        content = _load_file_(file)
+        template = etree.fromstring(content, parser = self.parser)
+        return template
+    
+    def build_env_content(self, content):
+        template = etree.fromstring(content, parser = self.parser)
+        return template
     
 class MTemplate:
     """ build abstract syntex tree (AST) based on template """
     def __init__(self):
         self.triggers = []
         self.root_CallSite = None
-        
+
     def build(self, env):
-        doc = py(env.get_template())
+        doc = py(env.template)
         #print "[Template]"
         #print doc
         #print "[/Template]"
@@ -323,9 +332,13 @@ class MTemplateParser:
         
     def parse(self, filename, **environment):
         content = _load_file_(filename)
-        results = self.template.root.do(content, **environment)
-        return results
+        result = self.template.root.do(content, **environment)
+        return result
 
+    def parse_content(self, content, **environment):
+        result = self.template.root.do(content, **environment)
+        return result
+    
 
 if __name__ == "__main__":
     pass
