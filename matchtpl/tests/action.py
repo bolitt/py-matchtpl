@@ -17,13 +17,13 @@ def test_login_action(results, attrs):
     return "Login with: " + str(results)
     
 def test_action_template():
-    env = MTemplateEnv(template = 'action_template.xml')
+    env = MTemplateEnv(template = 'action.xml')
     t = MTemplate()
     t.build(env)
     print t.root
 
     parser = MTemplateParser(t)
-    results = parser.parse("action_template.html", login=test_login_action)
+    results = parser.parse("action.html", login=test_login_action)
 
     print "[Results]"
     print results

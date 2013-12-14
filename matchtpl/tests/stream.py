@@ -10,9 +10,7 @@ import argparse
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-sys.path.append(os.path.join(os.getcwd(), '..'))
-from core import *
-
+from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
 
 def build_parser(template):
     env = MTemplateEnv(template = template)
@@ -31,15 +29,18 @@ if __name__ == "__main__":
     if args.template is None:
         argparser.print_help()
         exit()
-    if args.input is None:
-        argparser.print_help()
-        exit()
-        
     try:
         parser = build_parser(args.template[0])
     except Exception, e:
         print "Error in building parser:"
         print e
         exit()
-    r = parser.parse(args.input[0])
-    sys.stdout.write(u"%s" % r)
+    
+    if args.input is None:
+        content = sys.stdin.readlines()
+        content = "".join(content)
+        r = parser.parse_content(content)
+        sys.stdout.write(u"%s" % r)
+    else:
+        r = parser.parse(args.input[0])
+        sys.stdout.write(u"%s" % r)

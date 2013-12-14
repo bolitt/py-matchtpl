@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
 
-<root as="json">
+<root as="yaml">
 	<array select="div[id^='result_']" >
 		<map>
 			<s key="title" select="h3 span.lrg" get="text" />
