@@ -1,11 +1,21 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, os, os.path, codecs, re
-import json, yaml
+import sys, os, os.path, codecs
 from pyquery import PyQuery as py 
 from lxml import etree
-from pprint import pprint
+
+try:
+    import json
+except ImportError:
+    import warnings
+    warnings.warn("Package json not found, so some functions may cause exception. Please install json! ")
+    
+try:
+    import yaml
+except ImportError:
+    import warnings
+    warnings.warn("Package yaml not found, so some functions may cause exception. Please install PyYAML! ")
 
 
 __all__ = [

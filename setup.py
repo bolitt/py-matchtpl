@@ -1,6 +1,6 @@
 from setuptools import setup
 from sys import version
-import matchtpl, os
+import os
 if version < '2.6.0':
     raise Exception("This module doesn't support any version less than 2.6")
 
@@ -43,7 +43,7 @@ classifiers = [
 
 setup(
     name = 'matchtpl',
-    version = matchtpl.__version__,
+    version = '0.1.0.dev3',
     author = 'Tian L.',
     author_email = 'bolitt@gmail.com',
     url = 'https://github.com/bolitt/py-matchtpl.git',
@@ -57,9 +57,12 @@ setup(
     ],
     install_requires = [
         'pyquery>=1.2.6',
-	'lxml>=3.1.2',
-        'cssselect>=0.9.1',
+	'lxml>=2.1',
+        'cssselect',
     ],
+    extras_require = {
+        'yaml': ['PyYAML>=3.10'],
+    },
     test_suite = 'matchtpl.tests.test1',
     entry_points="""
       # -*- Entry points: -*-
