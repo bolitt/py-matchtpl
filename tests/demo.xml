@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="json">
+	<array select="#content ul li">
+		<map>
+			<s key="title" select="h2" get="text"/>
+			<s key="link" select="a" eval="attr('href')"/>
+		</map>
+	</array>
+	
+	<s select="#artical1" get="text"></s>
+	<s select="#artical2" get="html"></s>
+</root>

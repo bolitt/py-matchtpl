@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="yaml">
+	<map>
+		<s key="City" select='#location-chooser span.name' get="text"/>
+		<array key="Weekly" select="ul.forecast li.condition">
+			<map>
+				<s key="Date" select="span.name" get="text"/>
+				<s key="Temperature_high_f" select="span.temperature span.hi-f" get="text"/>
+				<s key="Temperature_low_f" select="span.temperature span.lo-f" get="text"/>
+				<s key="Temperature_high_c" select="span.temperature span.hi-c" get="text"/>
+				<s key="Temperature_low_c" select="span.temperature span.lo-c" get="text"/>
+			</map>
+		</array>
+	</map>
+</root>
