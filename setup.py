@@ -4,18 +4,14 @@ import os
 if version < '2.6.0':
     raise Exception("This module doesn't support any version less than 2.6")
 
-def read(*names):
-    values = dict()
-    for name in names:
-        filename = name + ".rst"
-        if os.path.isfile(filename):
-            fd = open(filename)
-            value = fd.read()
-            fd.close()
-        else:
-            value = ''
-        values[name] = value
-    return values
+def read(filename):
+    if os.path.isfile(filename):
+        fd = open(filename)
+        value = fd.read()
+        fd.close()
+    else:
+        value = ''
+    return value
 
 long_description = """
 %(README)s
@@ -27,7 +23,7 @@ News
 
 %(CHANGES)s
 
-""" % read('README', 'CHANGES')
+""" % { 'README': read('README.rst'), 'CHANGES': read('CHANGES.rst') }
 
 
 classifiers = [
@@ -36,14 +32,16 @@ classifiers = [
     'Programming Language :: Python :: 2.6',
     'Programming Language :: Python :: 2.7',
     'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
+    'Topic :: Software Development'
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
 
 setup(
     name = 'matchtpl',
-    version = '0.1.0.dev3',
+    version = '0.1.1',
     author = 'Tian L.',
     author_email = 'bolitt@gmail.com',
     url = 'https://github.com/bolitt/py-matchtpl.git',
