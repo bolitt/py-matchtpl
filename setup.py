@@ -35,7 +35,7 @@ classifiers = [
     'Intended Audience :: Science/Research',
     'License :: OSI Approved :: BSD License',
     'Operating System :: OS Independent',
-    'Topic :: Software Development'
+    'Topic :: Software Development',
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
 
