@@ -85,6 +85,7 @@ class MTemplate:
                         "key",    #key: for dict
                         "default", #default: default value
                         "as",     #as: type converter
+                        "encoding", #encoding
                         ]
         for a in TARGET_KEYWORDS:
             if py(ele).attr(a):
@@ -284,14 +285,20 @@ class RootCallSite(MTCallSite):
         MTCallSite.__init__(self, exp)
 
     def do(self, doc, **environment):
+        tag = self.attrs['_TAG_']
+        # convert encoding
+        if tag == "root" and self.has_attr('encoding'):
+            encoding = self.attrs['encoding']
+            doc = doc.decode(encoding)
+
         root_element = py(doc)
+        
         results = []
         for tri in self.children:
             r = tri['exp_callsite'].do(root_element)
             results.append(r)
 
         # action:
-        tag = self.attrs['_TAG_']
         if tag != "root":
             ret = self.call_action(results, action=tag, attrs=self.attrs, **environment)
             return ret

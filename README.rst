@@ -86,6 +86,9 @@ Here are typical keywords:
 
 * **as**: output format in human-readable way.
     * type (string): str | json | yaml. If not provided, will return python builtin data strucutures.
+	
+* **encoding**: set decoder for datasource.
+    * encode_type (string): such as UTF-8 (default), GBK/GB2312 (some Chinese websites), UTF-16, etc.
 
 (Keywords are not limited as above.)
 
