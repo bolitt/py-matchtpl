@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="json">
+<!-- helper function: 
+	1) demonstrate the usage of <script> 
+	2) should follow indent restriction in python
+-->	
+<script>
+# function:
+def append_timestamp(s):
+    # Import packages inside the scope!
+    from datetime import datetime, date
+    from urllib import quote
+    return "%s?timestamp=%s" % (s, quote(unicode(datetime.now())))
+</script>
+
+<!-- Here is the data part -->
+	<array select="#content ul li">
+		<map>
+			<s key="title" select="h2" get="text" />
+			<s key="link" select="a" eval="attr('href')"/>
+			<!-- Usage of 
+					(1) pipe;
+					(2) user-defined function;
+					(3) perl-like regex; 
+					(4) debug: mtdebug. 
+			-->
+			<s key="link2" select="a" eval="attr('href') | trim 
+											| upper | mtdebug
+											| s/(\d+).(HTML)/\1.php.\2/ig
+											| s#http(s)?://##ig
+											| append_timestamp" />
+		</map>
+	</array>
+	
+	<s select="#artical1" get="text"></s>
+	<s select="#artical2" get="html"></s>
+
+	
+<!-- Script is evaluted in compiling time, ahead of data.
+	Data is extracted in the runtime.
+	Therefore, the workflow is:
+		Compiling:
+			(1) <script> in the beginning;
+			(2) <script> at the end;
+		Runtime:
+			Extract data.
+-->
+<script>
+# built-in: mtdebug
+mtdebug(append_timestamp('test_url:: http://test/index.php'))
+</script>
+</root>

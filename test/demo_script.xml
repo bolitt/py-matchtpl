@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="json">
+
+	<array select="#content ul li">
+		<map>
+			<s key="title" select="h2" get="text"/>
+			<s key="link" select="a" eval="attr('href')"/>
+		</map>
+	</array>
+	
+	<s select="#artical1" get="text"></s>
+	<s select="#artical2" get="html"></s>
+
+<script>
+a=abs(-5)+2
+b=abs(-5)+1
+from jinja2 import Template
+template = Template('Hello! {{ a }} + {{ b }} == {{ a + b }}')
+c = template.render(a=a, b=b)
+
+from mako.template import Template
+d = Template("hello ${data}!").render(data="world")
+</script>
+
+<script>
+print d
+url = 'http://www.SINA.com.cn/'
+print escape(url)
+print unescape(url)
+print lower(url)
+print upper(url)
+content = " df dd \r\n"
+print content
+print trim(content)
+print title(content)
+print capitalize(trim(content))
+</script>
+
+<script>
+def get(url):
+	return mtrequest(url)
+#print get('http://www.baidu.com')
+</script>
+</root>

@@ -7,9 +7,12 @@ import codecs
 from pprint import pprint
 import argparse
 
-sys.path.append(os.path.join(os.getcwd(), '..'))
+# use this for testers
+sys.path.insert(0, '../matchtpl')
+from core import MTemplateEnv, MTemplate, MTemplateParser
 
-from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
+# use this in your code
+#from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
 
 def build_parser(template):
     env = MTemplateEnv(template = template)
@@ -17,7 +20,10 @@ def build_parser(template):
     t.build(env)
     parser = MTemplateParser(t)
     return parser
- 
+
+
+def stream():
+
 if __name__ == "__main__":
     argparser = argparse.ArgumentParser(description='Help of stream (py-matchtpl)')
     argparser.add_argument('-t', '--template', metavar='file', type=str, nargs=1,
@@ -32,7 +38,7 @@ if __name__ == "__main__":
         parser = build_parser(args.template[0])
     except Exception, e:
         print "Error in building parser:"
-        print e
+        print repr(e)
         exit()
     
     if args.input is None:

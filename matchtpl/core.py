@@ -4,6 +4,10 @@
 import sys, os, os.path, codecs
 from pyquery import PyQuery as py 
 from lxml import etree
+import urllib
+from eval import parse_eval, Evaluater
+from regexp import Regexp
+
 
 try:
     import json
@@ -28,7 +32,6 @@ __all__ = [
     "StringCallSite",
     "RootCallSite",
 ]
-
 utf8_parser = etree.HTMLParser(encoding='utf-8')
 
 def _load_file_(path):
@@ -39,7 +42,7 @@ def _load_file_(path):
 
 class MTemplateEnv:
     """ default environment of template """
-    def __init__(self, template = None, stream = None):
+    def __init__(self, template=None, stream=None):
         self.parser = etree.XMLParser(encoding='utf-8', remove_comments=True)
         if file is not None:
             self.template = self.build_env_file(template)
@@ -56,7 +59,87 @@ class MTemplateEnv:
     def build_env_content(self, content):
         template = etree.fromstring(content, parser = self.parser)
         return template
+
+
+class MTBuild(object):
+    ATTRS = {"select": None, #selection
+             "get": None,    #get value
+             "eval": None,   #eval value
+             "key": None,    #key: for dict
+             "default": None, #default: default value
+             "as": None,     #as: type converter
+             "encoding": None, #encoding
+             "type": None, # script's type
+            }
+    TAGS = {}
+    #TAGS_KEYWORDS = {"map": self.build_map,
+    #                 "array": self.build_array,
+    #                 "s": self.build_string,
+    #                 "script": self.build_script,
+    #                }
     
+    def __init__(self, keyword=None, kind=None):
+        #print "inside MTBuild.__init__()", keyword
+        self.keyword = keyword
+        self.kind = kind
+        if kind is None:
+            raise Exception('[error]need to specify kind: %s' % kind)
+        if kind == 'tag' and self.TAGS.has_key(keyword):
+            raise Exception('[error]keyword existed: %s' % keyword)
+        if kind == 'attr' and self.ATTRS.has_key(keyword):
+            raise Exception('[error]attribute existed: %s' % keyword)
+        
+    def __call__(self, original_func):
+        decorator_self = self
+        if self.kind == 'tag':
+            self.TAGS[self.keyword] = original_func
+            return original_func
+        if self.kind == 'attr':
+            self.ATTRS[self.keyword] = original_func
+
+    @staticmethod
+    def tags():
+        return MTBuild.TAGS
+    
+    @staticmethod
+    def attrs():
+        return MTBuild.ATTRS
+
+def mtdebug(s):
+    from pprint import pprint
+    sys.stderr.write("[MTDEBUG] ")
+    pprint(s, stream=sys.stderr)
+    return s
+
+class MTContext:
+    GLOBAL = { 'escape': urllib.quote,
+               'unescape': urllib.unquote,
+               'lower': str.lower,
+               'trim': str.strip,
+               'upper': str.upper,
+               'capitalize': str.capitalize,
+               'title': str.title,
+               'mtrequest': py,
+               'mtdebug': mtdebug,
+               }
+    LOCAL = { Evaluater.CONTEXT: None, }
+
+    def __init__(self):
+        pass
+    
+    @staticmethod
+    def globals(**kw):
+        if kw is not None:
+            MTContext.GLOBAL.update(kw)
+        return MTContext.GLOBAL
+
+    @staticmethod
+    def locals(**kw):
+        if kw is not None:
+            MTContext.LOCAL.update(kw)
+        return MTContext.LOCAL
+
+
 class MTemplate:
     """ build abstract syntex tree (AST) based on template """
     def __init__(self):
@@ -79,15 +162,8 @@ class MTemplate:
         """ Extract attrs """
         attrs = {}
         #manipulation keywords
-        TARGET_KEYWORDS = ["select", #selection
-                        "get",    #get value
-                        "eval",   #eval value
-                        "key",    #key: for dict
-                        "default", #default: default value
-                        "as",     #as: type converter
-                        "encoding", #encoding
-                        ]
-        for a in TARGET_KEYWORDS:
+        TARGET_KEYWORDS = MTBuild.attrs()
+        for a in TARGET_KEYWORDS.iterkeys():
             if py(ele).attr(a):
                 attrs[a] = py(ele).attr(a)
 
@@ -98,29 +174,32 @@ class MTemplate:
 
     def build_element(self, ele):
         attrs = self.extract_attrs(ele)
-        TARGET_KEYWORDS = {"map": self.build_map,
-                          "array": self.build_array,
-                          "s": self.build_string,
-                          }
-        
+        TARGET_KEYWORDS = MTBuild.tags()
         # deal with different data type
         for (tagname, callback) in TARGET_KEYWORDS.iteritems():
             if tagname == ele.tag:
-                return callback(ele, attrs)
+                return callback(self, ele, attrs)
 
+    #@MTBuild(keyword='root', kind='tag')
     def build_root(self, ele, attrs):
         for child in ele.children():
-            trigger = self.build_element(child)
-            self.triggers.append(trigger)
+            node = self.build_element(child)
+            if node['exp_kind'] == 'data':
+                self.triggers.append(node)
+            elif node['exp_kind'] == 'code':
+                # call the function immediately
+                node['exp_callsite'](element=None)
         # print "string:", ele, attrs
-        x = dict()
+        x = {}
         x['exp_meta'] = 'root'
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = self.triggers
+        x['exp_kind'] = 'root'
         self.root = x['exp_callsite'] = RootCallSite(x)
+        return x
         
-       
+    @MTBuild(keyword='array', kind='tag')     
     def build_array(self, ele, attrs):
         #print "array:", ele, attrs
         ch = []
@@ -131,9 +210,11 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = ch
+        x['exp_kind'] = 'data'
         x['exp_callsite'] = ArrayCallSite(x)
         return x
-        
+
+    @MTBuild(keyword='map', kind='tag')
     def build_map(self, ele, attrs):
         # print "map:", ele, attrs
         ch = []
@@ -145,9 +226,11 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = ch
+        x['exp_kind'] = 'data'
         x['exp_callsite'] = MapCallSite(x)
         return x
-        
+
+    @MTBuild(keyword='s', kind='tag')
     def build_string(self, ele, attrs):
         # print "string:", ele, attrs
         x = dict()
@@ -155,8 +238,23 @@ class MTemplate:
         x['exp_attrs'] = attrs
         x['exp_node'] = ele
         x['exp_children'] = []
+        x['exp_kind'] = 'data'
         x['exp_callsite'] = StringCallSite(x)
         return x
+
+    @MTBuild(keyword='script', kind='tag')
+    def build_script(self, ele, attrs):
+        # print "script:", ele, attrs
+        ch = py(ele).html()
+        x = dict()
+        x['exp_meta'] = 'script'
+        x['exp_attrs'] = attrs
+        x['exp_node'] = ele
+        x['exp_children'] = ch
+        x['exp_kind'] = 'code'
+        x['exp_callsite'] = ScriptCallSite(x)
+        return x
+
 
 #######################################################
 # CallSites: abstract syntex tree(AST) callsite
@@ -167,8 +265,9 @@ class MTCallSite:
         self.attrs = exp['exp_attrs']
         self.children = exp['exp_children']
         self.callsite = self
+        self.evaluator_cache = {}
         
-    def do(self, context):
+    def __call__(self, context):
         pass
 
     def has_attr(self, attrName):
@@ -198,11 +297,19 @@ class MTCallSite:
 
     def default(self, default_value):
         return default_value
-
+    
     def eval(self, eval_value, context):
         """ """
-        # usage: eval(expression[, globals[, locals]])
-        ret = eval("py(context)." + eval_value, {}, {'py': py, 'context': context,})
+        key_ctx = Evaluater.CONTEXT
+        g = MTContext.globals()
+        l = MTContext.locals(**{key_ctx: py(context),})
+        # cache the evaluator
+        cache = self.evaluator_cache
+        if not cache.has_key(eval_value):
+            evaluator = Evaluater(eval_value, key_ctx, g, l)
+            cache[eval_value] = evaluator
+        evaluator = cache[eval_value]
+        ret = evaluator()
         return ret
 
     def __str__(self):
@@ -212,7 +319,7 @@ class ArrayCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
     
-    def do(self, element):
+    def __call__(self, element):
         ch = []
         # print "array:", py(element)
         context = self.select(element)
@@ -228,14 +335,14 @@ class ArrayCallSite(MTCallSite):
                 #print "array:", py(child_context)
                 for child in self.children:
                     callsite = child['exp_callsite']
-                    ch.append(callsite.do(child_context))
+                    ch.append(callsite(child_context))
         return ch
 
 class MapCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def do(self, element):
+    def __call__(self, element):
         ch = {}
         #print "map:", py(element)
         context = self.select(element)
@@ -252,14 +359,14 @@ class MapCallSite(MTCallSite):
                 callsite = child['exp_callsite']
                 if callsite.has_attr('key'):
                     key = callsite.attrs['key']
-                    ch[key] = callsite.do(child_context)
+                    ch[key] = callsite(child_context)
         return ch
 
 class StringCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
     
-    def do(self, element):
+    def __call__(self, element):
         child_context = self.select(element)
         ret_val = None
         #print 'string:', py(child_context)
@@ -280,11 +387,29 @@ class StringCallSite(MTCallSite):
             ret_val = self.default(default_val)
         return ret_val
 
+class ScriptCallSite(MTCallSite):
+    def __init__(self, exp):
+        MTCallSite.__init__(self, exp)
+    
+    def __call__(self, element):
+        ret_val = None
+        #print 'script:', py(child_context)
+        # deal with:
+        code = self.children
+        #print '===='
+        #print code
+        #print '===='
+        code_AST = compile(code, code, "exec")
+        exec(code_AST, MTContext.globals(), MTContext.locals())
+        #print MTContext.globals()
+        #print MTContext.locals()
+        return ret_val
+
 class RootCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def do(self, doc, **environment):
+    def __call__(self, doc, **environment):
         tag = self.attrs['_TAG_']
         # convert encoding
         if tag == "root" and self.has_attr('encoding'):
@@ -295,7 +420,7 @@ class RootCallSite(MTCallSite):
         
         results = []
         for tri in self.children:
-            r = tri['exp_callsite'].do(root_element)
+            r = tri['exp_callsite'](root_element)
             results.append(r)
 
         # action:
@@ -349,11 +474,11 @@ class MTemplateParser:
         
     def parse(self, filename, **environment):
         content = _load_file_(filename)
-        result = self.template.root.do(content, **environment)
+        result = self.template.root(content, **environment)
         return result
 
     def parse_content(self, content, **environment):
-        result = self.template.root.do(content, **environment)
+        result = self.template.root(content, **environment)
         return result
     
 
