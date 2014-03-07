@@ -1,3 +1,3 @@
 @echo off
 
-python stream.py -t demo_eval.xml -i demo.html
+python streaming.py -t demo_eval.xml -i demo.html

@@ -41,7 +41,7 @@ classifiers = [
 
 setup(
     name = 'matchtpl',
-    version = '0.1.2',
+    version = '0.2.0',
     author = 'Tian L.',
     author_email = 'bolitt@gmail.com',
     url = 'https://github.com/bolitt/py-matchtpl.git',

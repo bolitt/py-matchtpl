@@ -21,6 +21,13 @@ except ImportError:
     import warnings
     warnings.warn("Package yaml not found, so some functions may cause exception. Please install PyYAML! ")
 
+try:
+    import unicodecsv as csv
+    from cStringIO import StringIO
+except ImportError:    
+    import warnings
+    warnings.warn("Package unicodecsv not found, so some functions may cause exception. Please install unicodecsv! ")
+
 
 __all__ = [
     "MTemplateEnv",
