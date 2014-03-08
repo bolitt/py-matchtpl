@@ -14,7 +14,7 @@ from core import MTemplateEnv, MTemplate, MTemplateParser
 #from matchtpl import MTemplateEnv, MTemplate, MTemplateParser
 
 def build_parser(template):
-    env = MTemplateEnv(template = template)
+    env = MTemplateEnv(template=template)
     t = MTemplate()
     t.build(env)
     parser = MTemplateParser(t)
