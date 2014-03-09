@@ -1,6 +1,6 @@
 
-from matchtpl.fixpath import fixpath
-fixpath()
+import os, sys
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'matchtpl'))
 
 from streaming import streaming as streaming
 

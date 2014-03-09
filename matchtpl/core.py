@@ -2,13 +2,12 @@
 # -*- coding: utf-8 -*-
 
 
-from pyquery import PyQuery as py
-
 from basic import *
+from pyquery import PyQuery as py
 from callsite import *
 from _aux_ import _load_file_
-
-
+import os
+import warnings
 
 
 class MTemplate:
@@ -47,14 +46,29 @@ class MTemplate:
         attrs = self.extract_attrs(ele)
         TARGET_KEYWORDS = MTBuild.tags()
         # deal with different data type
-        for (tagname, callback) in TARGET_KEYWORDS.iteritems():
-            if tagname == ele.tag:
-                return callback(self, ele, attrs)
+        tagname = ele.tag
+        # print '[Test]tagname', tagname
+        if TARGET_KEYWORDS.has_key(tagname):
+            callback = TARGET_KEYWORDS.get(tagname)
+            yield callback(self, ele, attrs)
+        else:
+            warnings.warn('Ignore tag: %s. Cannot be recognized.' % tagname)
+            children = []
+            for cl in py(ele).children():
+                for i in self.build_element(cl):
+                    children.append(i)
+            for i in children:
+                yield i
 
-    #@MTBuild(keyword='root', kind='tag')
+    @MTBuild(keyword='root', kind='tag')
     def build_root(self, ele, attrs):
-        for child in ele.children():
-            node = self.build_element(child)
+        ch = []
+        for child in py(ele).children():
+            for node in self.build_element(child):
+                ch.append(node)
+        # from pprint import pprint
+        # pprint(ch)
+        for node in ch:
             if node['exp_kind'] == 'data':
                 self.triggers.append(node)
             elif node['exp_kind'] == 'code':
@@ -75,7 +89,8 @@ class MTemplate:
         #print "array:", ele, attrs
         ch = []
         for child in py(ele).children():
-            ch.append(self.build_element(child))
+            for node in self.build_element(child):
+                ch.append(node)
         x = dict()
         x['exp_meta'] = 'array'
         x['exp_attrs'] = attrs
@@ -90,8 +105,8 @@ class MTemplate:
         # print "map:", ele, attrs
         ch = []
         for child in py(ele).children():
-            #print child
-            ch.append(self.build_element(child))
+            for node in self.build_element(child):
+                ch.append(node)
         x = dict()
         x['exp_meta'] = 'map'
         x['exp_attrs'] = attrs
@@ -124,6 +139,20 @@ class MTemplate:
         x['exp_children'] = ch
         x['exp_kind'] = 'code'
         x['exp_callsite'] = ScriptCallSite(x)
+        return x
+
+    @MTBuild(keyword='render', kind='tag')
+    def build_render(self, ele, attrs):
+        # print "script:", ele, attrs
+        ch = py(ele).html()
+        ch = ch.strip(os.linesep)
+        x = dict()
+        x['exp_meta'] = 'render'
+        x['exp_attrs'] = attrs
+        x['exp_node'] = ele
+        x['exp_children'] = ch
+        x['exp_kind'] = 'render'
+        x['exp_callsite'] = RenderCallSite(x)
         return x
 
 #######################################################

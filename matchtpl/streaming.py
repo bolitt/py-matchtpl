@@ -6,6 +6,7 @@ import os
 import codecs
 from pprint import pprint
 import argparse
+import traceback
 
 # use this for testers
 from core import MTemplateEnv, MTemplate, MTemplateParser
@@ -36,6 +37,7 @@ def streaming(args=args, stdin=sys.stdin, stdout=sys.stdout):
     except Exception, e:
         print "Error in building parser:"
         print repr(e)
+        traceback.print_exc()
         exit()
 
     if args.input is None:

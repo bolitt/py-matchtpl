@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from basic import *
 from pyquery import PyQuery as py
 from eval import Evaluater
-from basic import *
+from render import render
 
 try:
     import json
@@ -173,6 +174,25 @@ class ScriptCallSite(MTCallSite):
         #print MTContext.locals()
         return ret_val
 
+class RenderCallSite(MTCallSite):
+    def __init__(self, exp):
+        MTCallSite.__init__(self, exp)
+
+    def __call__(self, element, dic={}):
+        ret_val = None
+        if self.has_attr("type"):
+            kind = self.attrs["type"]
+        template_str = self.children
+        ret_val = render(template_str, dic, kind=kind)
+        return ret_val
+
+class DataCallSite(MTCallSite):
+    def __init__(self, exp):
+        MTCallSite.__init__(self, exp)
+
+    def __call__(self):
+        pass
+
 class RootCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
@@ -208,12 +228,22 @@ class RootCallSite(MTCallSite):
         if as_val == "str":
             return str(results)
         elif as_val == "json":
-            return json.dumps(results,
-                        encoding='utf-8', ensure_ascii=False, indent=4, sort_keys=True, )
+            json_conf = {'encoding': 'utf-8',
+                         'ensure_ascii': False,
+                         'indent': 4,
+                         'sort_keys': True, }
+            return json.dumps(results, **json_conf)
+                        # json.dumps(results, encoding='utf-8', ensure_ascii=False, indent=4, sort_keys=True, )
         elif as_val == "yaml":
-            return yaml.dump(results,
-                        encoding='utf-8', allow_unicode=True, default_flow_style=False,
-                        line_break=True, indent=4, )
+            yaml_conf = {'encoding': 'utf-8',
+                         'allow_unicode': True,
+                         'default_flow_style': False,
+                         'line_break': True,
+                         'indent': 4, }
+            return yaml.dump(results, **yaml_conf)
+                    # yaml.dump(results,
+                    #        encoding='utf-8', allow_unicode=True, default_flow_style=False,
+                    #        line_break=True, indent=4, )
         raise Exception("[Error] root attributes: %s not recognized" % as_val)
 
     #def make_instance(self, classname, *args, **kwargs):

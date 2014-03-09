@@ -1,9 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from core import *
 
 __title__ = 'matchtpl'
-
 
 __all__ = [
     "MTemplateEnv",

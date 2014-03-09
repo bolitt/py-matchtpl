@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root as="json">
+	<data>
+		<array select="#content ul li">
+			<map>
+				<s key="title" select="h2" get="text"/>
+				<s key="link" select="a" eval="attr('href')"/>
+			</map>
+		</array>
+	</data>
+	
+	<data>
+		<data></data>
+		<d></d>
+	</data>
+	
+<render id="" type="jinja2" url="http://jinja.pocoo.org/">
+{{ title }}
+{% for row in content %}
+{{ }}
+{% end for %}
+</render>
+</root>

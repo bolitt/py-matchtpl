@@ -8,12 +8,12 @@ import sys
     FIXPATH_FILE: this file
     MATCHTPL_DIR: the real dir of this file
 '''
-FIXPATH_FILE = __file__
-MATCHTPL_DIR = os.path.dirname(__file__)
+from constants import LIB_DIR
+
 
 '''add path to the environment
 '''
-def fixpath(path=MATCHTPL_DIR):
+def fixpath(path=LIB_DIR):
     if path not in sys.path:
         sys.path.append(path)
 
