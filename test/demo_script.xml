@@ -19,8 +19,6 @@ b=abs(-5)+1
 from jinja2 import Template
 template = Template('Hello! {{ a }} + {{ b }} == {{ a + b }}')
 c = template.render(a=a, b=b)
-
-from mako.template import Template
 d = Template("hello ${data}!").render(data="world")
 </script>
 

@@ -10,10 +10,20 @@ import os
 import warnings
 
 
+class MTNode(dict):
+    def __init__(self, meta, attrs, orig_ele, kind, children=None, callsite=None):
+        self['exp_meta'] = meta            #'root'
+        self['exp_attrs'] = attrs
+        self['exp_node'] = orig_ele        # ele
+        self['exp_children'] = children    # self.triggers
+        self['exp_kind'] = kind            # 'root'
+        self['exp_callsite'] = callsite    # RootCallSite(x)
+
 class MTemplate:
     """ build abstract syntex tree (AST) based on template """
     def __init__(self):
         self.triggers = []
+        self.ids = {}
         self.root_CallSite = None
 
     def build(self, env):
@@ -75,12 +85,8 @@ class MTemplate:
                 # call the function immediately
                 node['exp_callsite'](element=None)
         # print "string:", ele, attrs
-        x = {}
-        x['exp_meta'] = 'root'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        x = MTNode(meta='root', attrs=attrs, orig_ele=ele, kind='root')
         x['exp_children'] = self.triggers
-        x['exp_kind'] = 'root'
         self.root = x['exp_callsite'] = RootCallSite(x)
         return x
 
@@ -91,12 +97,8 @@ class MTemplate:
         for child in py(ele).children():
             for node in self.build_element(child):
                 ch.append(node)
-        x = dict()
-        x['exp_meta'] = 'array'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        x = MTNode(meta='array', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = ch
-        x['exp_kind'] = 'data'
         x['exp_callsite'] = ArrayCallSite(x)
         return x
 
@@ -107,24 +109,16 @@ class MTemplate:
         for child in py(ele).children():
             for node in self.build_element(child):
                 ch.append(node)
-        x = dict()
-        x['exp_meta'] = 'map'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        x = MTNode(meta='map', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = ch
-        x['exp_kind'] = 'data'
         x['exp_callsite'] = MapCallSite(x)
         return x
 
     @MTBuild(keyword='s', kind='tag')
     def build_string(self, ele, attrs):
         # print "string:", ele, attrs
-        x = dict()
-        x['exp_meta'] = 'string'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        x = MTNode(meta='string', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = []
-        x['exp_kind'] = 'data'
         x['exp_callsite'] = StringCallSite(x)
         return x
 
@@ -132,12 +126,8 @@ class MTemplate:
     def build_script(self, ele, attrs):
         # print "script:", ele, attrs
         ch = py(ele).html()
-        x = dict()
-        x['exp_meta'] = 'script'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        x = MTNode(meta='script', attrs=attrs, orig_ele=ele, kind='code')
         x['exp_children'] = ch
-        x['exp_kind'] = 'code'
         x['exp_callsite'] = ScriptCallSite(x)
         return x
 
@@ -145,13 +135,9 @@ class MTemplate:
     def build_render(self, ele, attrs):
         # print "script:", ele, attrs
         ch = py(ele).html()
-        ch = ch.strip(os.linesep)
-        x = dict()
-        x['exp_meta'] = 'render'
-        x['exp_attrs'] = attrs
-        x['exp_node'] = ele
+        ch = ch.strip(os.linesep) # trim: the front end ended line separators
+        x = MTNode(meta='render', attrs=attrs, orig_ele=ele, kind='render')
         x['exp_children'] = ch
-        x['exp_kind'] = 'render'
         x['exp_callsite'] = RenderCallSite(x)
         return x
 
