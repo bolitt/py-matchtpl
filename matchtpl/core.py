@@ -45,7 +45,7 @@ class MTemplate:
         root_node = self.build_root(doc, attrs)
         self.root = root_node['exp_callsite']
 
-    def build_node_id(self, attrs, x):
+    def build_node_index(self, attrs, x):
         if attrs.has_key('id'):
             id = attrs['id'] ## TODO
             # logger.debug('[id] %s' % id)
@@ -105,7 +105,7 @@ class MTemplate:
         x['exp_children'] = self.triggers
         x['exp_callsite'] = RootCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
     @MTBuild(keyword='array', kind='tag')
@@ -119,7 +119,7 @@ class MTemplate:
         x['exp_children'] = ch
         x['exp_callsite'] = ArrayCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
     @MTBuild(keyword='map', kind='tag')
@@ -133,7 +133,7 @@ class MTemplate:
         x['exp_children'] = ch
         x['exp_callsite'] = MapCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
     @MTBuild(keyword='s', kind='tag')
@@ -143,7 +143,7 @@ class MTemplate:
         x['exp_children'] = []
         x['exp_callsite'] = StringCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
     @MTBuild(keyword='script', kind='tag')
@@ -154,7 +154,7 @@ class MTemplate:
         x['exp_children'] = ch
         x['exp_callsite'] = ScriptCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
     @MTBuild(keyword='render', kind='tag')
@@ -166,7 +166,7 @@ class MTemplate:
         x['exp_children'] = ch
         x['exp_callsite'] = RenderCallSite(x)
 
-        self.build_node_id(attrs, x)
+        self.build_node_index(attrs, x)
         return x
 
 #######################################################

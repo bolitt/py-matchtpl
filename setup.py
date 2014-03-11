@@ -55,11 +55,6 @@ setup(
     long_description = long_description,
     classifiers = classifiers,
     packages = find_packages(),
-    #    '_': ['matchtpl'],
-    #    'etc': ['matchtpl/etc'],
-    #    'web': ['matchtpl/web'],
-    #    'future': ['matchtpl/future'],
-    #},
     include_package_data=True,
     package_data = {
         '': CONF_EXTS + TXT_EXTS + WEB_EXTS,
