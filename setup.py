@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 from sys import version
 import os
 if version < '2.6.0':
@@ -39,6 +39,10 @@ classifiers = [
     'Topic :: Software Development :: Libraries :: Python Modules',
 ]
 
+TXT_EXTS = ['*.txt', '*.rst']
+CONF_EXTS = ['*.conf']
+WEB_EXTS = ['*.js', '*.css', '*.html', '*.htm']
+
 setup(
     name = 'matchtpl',
     version = '0.2.0',
@@ -50,14 +54,21 @@ setup(
     keywords = 'match template crawler extract data xml html',
     long_description = long_description,
     classifiers = classifiers,
-    packages = [
-        'matchtpl',
-    ],
-    install_requires = [
-        'pyquery>=1.2.6',
-	'lxml>=2.1',
-        'cssselect',
-    ],
+    packages = find_packages(),
+    #    '_': ['matchtpl'],
+    #    'etc': ['matchtpl/etc'],
+    #    'web': ['matchtpl/web'],
+    #    'future': ['matchtpl/future'],
+    #},
+    include_package_data=True,
+    package_data = {
+        '': CONF_EXTS + TXT_EXTS + WEB_EXTS,
+    },
+    install_requires = {
+        'pyquery': 'pyquery>=1.2.6',
+	'lxml': 'lxml>=2.1',
+        'cssselect': 'cssselect',
+    },
     extras_require = {
         'yaml': ['PyYAML>=3.10'],
     },

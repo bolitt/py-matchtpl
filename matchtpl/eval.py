@@ -8,11 +8,11 @@ from regexp import Regexp
 #from pprint import pprint
 
 class Evaluater:
-    CONTEXT = '_mt_context_'
+    KEYNAME = '_running_context_'
     
-    def __init__(self, eval_value, context, g, l):
+    def __init__(self, eval_value, key_ctx, g, l):
         self.eval_value = eval_value
-        self.context = context
+        self.key_ctx = key_ctx
         self.globals = g
         self.locals = l
         self.build_expr_chain()
@@ -23,7 +23,7 @@ class Evaluater:
             try:
                 self.ret = self.funcs[i]()
                 #print self.ret
-                self.locals.update( {self.context: self.ret,} )
+                self.locals.update({self.key_ctx: self.ret,})
             except Exception, e:
                 print e
                 print self.segs[i]
@@ -36,17 +36,17 @@ class Evaluater:
             raise ExpressionError(self.eval_value, '1+ expression(s) is needed')
         self.funcs.append(self.build_expr_first())
         for seg in self.segs[1:]:
-            self.funcs.append(self.build_expr_rest(seg))
+            self.funcs.append(self.build_expr_others(seg))
         
     def build_expr_first(self):
-        expr = "%s." % self.context + self.segs[0]
+        expr = "%s." % self.key_ctx + self.segs[0]
         code_ast = compile(expr, expr, 'eval')
         def func():
             # usage: eval(expression[, globals[, locals]])
             return eval(code_ast, self.globals, self.locals)
         return func
 
-    def build_expr_rest(self, seg):
+    def build_expr_others(self, seg):
         f = None
         if self.globals.has_key(seg):
             f = self.globals[seg]
@@ -54,7 +54,7 @@ class Evaluater:
             f = self.locals[seg]
         # if it is existed function:
         if f is not None:
-            expr = seg + '(%s)' % self.context
+            expr = seg + '(%s)' % self.key_ctx
             code_ast = compile(expr, expr, 'eval')        
             def func():
                 return eval(code_ast, self.globals, self.locals)

@@ -1,10 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, re
-import os
-import codecs
-from pprint import pprint
+import sys
 import argparse
 import traceback
 
@@ -21,7 +18,7 @@ def build_parser(template):
     parser = MTemplateParser(t)
     return parser
 
-argparser = argparse.ArgumentParser(description='Help of stream (py-matchtpl)')
+argparser = argparse.ArgumentParser(description='Help of streaming (py-matchtpl)')
 argparser.add_argument('-t', '--template', metavar='file', type=str, nargs=1,
                help='file of template to build parser')
 argparser.add_argument('-i', '--input', metavar='input', type=str, nargs=1,

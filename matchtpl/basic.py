@@ -42,6 +42,7 @@ class MTBuild(object):
              "as": None,     #as: type converter
              "encoding": None, #encoding
              "type": None, # script's type
+             "id": None, # element's id
             }
     TAGS = {}
     #TAGS_KEYWORDS = {"map": self.build_map,
@@ -96,7 +97,7 @@ class MTContext:
                'mtrequest': py,
                'mtdebug': mtdebug,
                }
-    LOCAL = { Evaluater.CONTEXT: None, }
+    LOCAL = { Evaluater.KEYNAME: None, }
 
     def __init__(self):
         pass

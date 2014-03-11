@@ -4,10 +4,14 @@
 
 from basic import *
 from pyquery import PyQuery as py
+
+from log import LOGGER as logger
 from callsite import *
 from _aux_ import _load_file_
 import os
 import warnings
+from error import TemplateError
+from constants import VALID_ID as VALID_ID
 
 
 class MTNode(dict):
@@ -18,6 +22,8 @@ class MTNode(dict):
         self['exp_children'] = children    # self.triggers
         self['exp_kind'] = kind            # 'root'
         self['exp_callsite'] = callsite    # RootCallSite(x)
+
+
 
 class MTemplate:
     """ build abstract syntex tree (AST) based on template """
@@ -36,7 +42,17 @@ class MTemplate:
 
     def fromdoc(self, doc):
         attrs = self.extract_attrs(doc)
-        self.build_root(doc, attrs)
+        root_node = self.build_root(doc, attrs)
+        self.root = root_node['exp_callsite']
+
+    def build_node_id(self, attrs, x):
+        if attrs.has_key('id'):
+            id = attrs['id'] ## TODO
+            # logger.debug('[id] %s' % id)
+            if VALID_ID.match(id) is None or self.ids.has_key(id) :
+                raise TemplateError('id:%s is duplicated!' % attrs['id'])
+            else:
+                self.ids[id] = x
 
     def extract_attrs(self, ele):
         """ Extract attrs """
@@ -87,7 +103,9 @@ class MTemplate:
         # print "string:", ele, attrs
         x = MTNode(meta='root', attrs=attrs, orig_ele=ele, kind='root')
         x['exp_children'] = self.triggers
-        self.root = x['exp_callsite'] = RootCallSite(x)
+        x['exp_callsite'] = RootCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
     @MTBuild(keyword='array', kind='tag')
@@ -100,6 +118,8 @@ class MTemplate:
         x = MTNode(meta='array', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = ch
         x['exp_callsite'] = ArrayCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
     @MTBuild(keyword='map', kind='tag')
@@ -112,6 +132,8 @@ class MTemplate:
         x = MTNode(meta='map', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = ch
         x['exp_callsite'] = MapCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
     @MTBuild(keyword='s', kind='tag')
@@ -120,6 +142,8 @@ class MTemplate:
         x = MTNode(meta='string', attrs=attrs, orig_ele=ele, kind='data')
         x['exp_children'] = []
         x['exp_callsite'] = StringCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
     @MTBuild(keyword='script', kind='tag')
@@ -129,16 +153,20 @@ class MTemplate:
         x = MTNode(meta='script', attrs=attrs, orig_ele=ele, kind='code')
         x['exp_children'] = ch
         x['exp_callsite'] = ScriptCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
     @MTBuild(keyword='render', kind='tag')
     def build_render(self, ele, attrs):
         # print "script:", ele, attrs
         ch = py(ele).html()
-        ch = ch.strip(os.linesep) # trim: the front end ended line separators
+        ch = ch.strip(os.linesep)  # trim: the front end ended line separators
         x = MTNode(meta='render', attrs=attrs, orig_ele=ele, kind='render')
         x['exp_children'] = ch
         x['exp_callsite'] = RenderCallSite(x)
+
+        self.build_node_id(attrs, x)
         return x
 
 #######################################################
@@ -146,15 +174,17 @@ class MTemplateParser:
     def __init__(self, template):
         self.template = template
         
-    def parse(self, filename, **environment):
+    def parse(self, filename, **options):
         content = _load_file_(filename)
-        result = self.template.root(content, **environment)
+        env = {'template': self.template,
+               'mtcontext': MTContext, }
+        result = self.template.root(env, content, **options)
         return result
 
-    def parse_content(self, content, **environment):
-        result = self.template.root(content, **environment)
+    def parse_content(self, content, **options):
+        env = {'template': self.template,
+               'mtcontext': MTContext, }
+        result = self.template.root(env, content, **options)
         return result
     
 
-if __name__ == "__main__":
-    pass

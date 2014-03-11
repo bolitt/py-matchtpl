@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os, sys
+import os
+import sys
+import re
 
 ''' lib directory '''
 LIB_DIR = os.path.dirname(__file__)
@@ -27,3 +29,26 @@ YAML_CONF = {'encoding': 'utf-8',
              'line_break': True,
              'indent': 4, }
 
+''' valid element id '''
+VALID_ID = re.compile(r'^[_a-zA-Z][_a-zA-Z0-9]*$')
+
+
+
+
+def test():
+    # invalid
+    print VALID_ID.match("") is None
+    print VALID_ID.match(" _ ") is None
+    print VALID_ID.match(" _") is None
+    print VALID_ID.match("$a") is None
+    print VALID_ID.match("a b") is None
+
+    # valid
+    print VALID_ID.match("_") is not None
+    print VALID_ID.match("a") is not None
+    print VALID_ID.match("anApple") is not None
+    print VALID_ID.match("_anApple__") is not None
+    print VALID_ID.match("_an_apple") is not None
+
+if __name__ == "__main__":
+    test()

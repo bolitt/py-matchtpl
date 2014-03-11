@@ -8,6 +8,7 @@ from error import ExpressionError
 # perl-like regex
 # refer: http://www.troubleshooters.com/codecorn/littperl/perlreg.htm
 
+
 is_match = re.compile(r'^[m/]')
 is_sub = re.compile(r'^s')
 get_delimiter = re.compile(r'[ms]*(.)')

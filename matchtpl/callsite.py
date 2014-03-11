@@ -36,7 +36,7 @@ class MTCallSite:
         self.callsite = self
         self.evaluator_cache = {}
 
-    def __call__(self, context):
+    def __call__(self, env, context):
         pass
 
     def has_attr(self, attrName):
@@ -47,7 +47,8 @@ class MTCallSite:
         if self.attrs.has_key('select'):
             #return py(context).find(self.attrs['select'])
             selector = self.attrs['select']
-        else: # no selector is found
+        else:
+            # no selector is found
             return py(context)
 
         # if find selector
@@ -69,7 +70,7 @@ class MTCallSite:
 
     def eval(self, eval_value, context):
         """ eval with Evaluater """
-        key_ctx = Evaluater.CONTEXT
+        key_ctx = Evaluater.KEYNAME
         g = MTContext.globals()
         l = MTContext.locals(**{key_ctx: py(context),})
         # cache the evaluator
@@ -88,7 +89,7 @@ class ArrayCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, element):
+    def __call__(self, env, element):
         ch = []
         # print "array:", py(element)
         context = self.select(element)
@@ -104,14 +105,14 @@ class ArrayCallSite(MTCallSite):
                 #print "array:", py(child_context)
                 for child in self.children:
                     callsite = child['exp_callsite']
-                    ch.append(callsite(child_context))
+                    ch.append(callsite(env, child_context))
         return ch
 
 class MapCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, element):
+    def __call__(self, env, element):
         ch = {}
         #print "map:", py(element)
         context = self.select(element)
@@ -128,14 +129,14 @@ class MapCallSite(MTCallSite):
                 callsite = child['exp_callsite']
                 if callsite.has_attr('key'):
                     key = callsite.attrs['key']
-                    ch[key] = callsite(child_context)
+                    ch[key] = callsite(env, child_context)
         return ch
 
 class StringCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, element):
+    def __call__(self, env, element):
         child_context = self.select(element)
         ret_val = None
         #print 'string:', py(child_context)
@@ -160,7 +161,7 @@ class ScriptCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, element):
+    def __call__(self, env, element):
         ret_val = None
         #print 'script:', py(child_context)
         # deal with:
@@ -178,7 +179,7 @@ class RenderCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, element, dic={}):
+    def __call__(self, env, element, dic={}):
         ret_val = None
         if self.has_attr("type"):
             kind = self.attrs["type"]
@@ -190,14 +191,14 @@ class DataCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self):
+    def __call__(self, env, element):
         pass
 
 class RootCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, doc, **environment):
+    def __call__(self, env, doc, **environment):
         tag = self.attrs['_TAG_']
         # convert encoding
         if tag == "root" and self.has_attr('encoding'):
@@ -208,7 +209,7 @@ class RootCallSite(MTCallSite):
 
         results = []
         for tri in self.children:
-            r = tri['exp_callsite'](root_element)
+            r = tri['exp_callsite'](env, root_element)
             results.append(r)
 
         # action:

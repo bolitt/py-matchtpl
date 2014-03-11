@@ -16,7 +16,7 @@
 		<d></d>
 	</data>
 	
-<render id="" type="jinja2" url="http://jinja.pocoo.org/">
+<render id="template1" type="jinja2" url="http://jinja.pocoo.org/">
 {{ title }}
 {% for row in content %}
 {{ }}
