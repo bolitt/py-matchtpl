@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!-- <m:match version="1.0" xmlns:m="Tian's html Matching Template"> -->
+
+<root>
+	<data in="id:systemin | trim" out="as:json">
+		<s select="#type" get="text"></s>
+	</data>
+	
+	<script id="systemin" type="system">
+		dir c:\
+	</script>
+	
+	<script id="webin" type="url">
+		http://www.baidu.com
+		http://www.google.com
+		http://www.sina.com.cn
+	</script>
+
+<render id="template1" type="jinja2" url="http://jinja.pocoo.org/">
+{{ title }}
+{% for row in content %}
+{{ }}
+{% end for %}
+</render>
+</root>
