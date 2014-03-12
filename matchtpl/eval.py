@@ -89,23 +89,4 @@ def parse_eval(s, regex_delimiter=RE_DELIMITER):
             raise ExpressionError(s, 'invalid expression')
     return segs
 
-def test_parse():
-    print parse_eval('''eval() | upper | lower | mtrequest | s/|/<sep>/ig | 
-        dfa
-    ''')
-    ex = None
-    try:
-        print parse_eval('''eval() | upper | lower | mtrequest | |  ''')
-    except Exception, e:
-        print e
-        ex = e
-    print ex != None
 
-def test_evaluator():
-    expr = 'strip() | lower | title | s/\./?/ig '
-    ev = Evaluater(expr, '_context_', {'lower': str.lower, 'title': str.title}, {'_context_': ' abf.zZz#bbB.zZz|dd ' } )
-    ev()
-
-if __name__ == '__main__':
-    test_parse()
-    test_evaluator()

@@ -4,7 +4,7 @@
 import codecs
 
 def _load_file_(path):
-    f = codecs.open(path, 'r')
-    content = f.read()
-    f.close()
+    content = None
+    with codecs.open(path, 'r') as f:
+        content = f.read()
     return content
