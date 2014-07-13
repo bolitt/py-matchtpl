@@ -36,7 +36,7 @@ class MTCallSite:
         self.callsite = self
         self.evaluator_cache = {}
 
-    def __call__(self, env, context):
+    def __call__(self, runtime, context):
         pass
 
     def has_attr(self, attrName):
@@ -89,7 +89,7 @@ class ArrayCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element):
+    def __call__(self, runtime, element):
         ch = []
         # print "array:", py(element)
         context = self.select(element)
@@ -101,18 +101,20 @@ class ArrayCallSite(MTCallSite):
             eval_val = self.attrs["eval"]
             context = self.eval(eval_val, context)
         if len(context) > 0:
+            runtime.stack.push(ch)
             for child_context in context:
                 #print "array:", py(child_context)
                 for child in self.children:
                     callsite = child['exp_callsite']
-                    ch.append(callsite(env, child_context))
+                    ch.append(callsite(runtime, child_context))
+            runtime.stack.pop()
         return ch
 
 class MapCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element):
+    def __call__(self, runtime, element):
         ch = {}
         #print "map:", py(element)
         context = self.select(element)
@@ -125,18 +127,20 @@ class MapCallSite(MTCallSite):
         if len(context) > 0:
             child_context = context
             #print "map child:", py(child_context)
+            runtime.stack.push(ch)
             for child in self.children:
                 callsite = child['exp_callsite']
                 if callsite.has_attr('key'):
                     key = callsite.attrs['key']
-                    ch[key] = callsite(env, child_context)
+                    ch[key] = callsite(runtime, child_context)
+            runtime.stack.pop()
         return ch
 
 class StringCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element):
+    def __call__(self, runtime, element):
         child_context = self.select(element)
         ret_val = None
         #print 'string:', py(child_context)
@@ -161,7 +165,7 @@ class ScriptCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element):
+    def __call__(self, runtime, element):
         ret_val = None
         #print 'script:', py(child_context)
         # deal with:
@@ -179,7 +183,7 @@ class RenderCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element, dic={}):
+    def __call__(self, runtime, element, dic={}):
         ret_val = None
         if self.has_attr("type"):
             kind = self.attrs["type"]
@@ -191,14 +195,22 @@ class DataCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, element):
+    def __call__(self, runtime, element):
         pass
+
+class CallbackCallSite(MTCallSite):
+    def __init__(self, exp):
+        MTCallSite.__init__(self, exp)
+
+    def __call__(self, runtime, element):
+        pass
+
 
 class RootCallSite(MTCallSite):
     def __init__(self, exp):
         MTCallSite.__init__(self, exp)
 
-    def __call__(self, env, doc, **environment):
+    def __call__(self, runtime, doc, **environment):
         tag = self.attrs['_TAG_']
         # convert encoding
         if tag == "root" and self.has_attr('encoding'):
@@ -208,10 +220,12 @@ class RootCallSite(MTCallSite):
         root_element = py(doc)
 
         results = []
+        runtime.stack.push(results)
         for tri in self.children:
-            r = tri['exp_callsite'](env, root_element)
+            r = tri['exp_callsite'](runtime, root_element)
             results.append(r)
-
+        runtime.stack.pop()
+        
         # action:
         if tag != "root":
             ret = self.call_action(results, action=tag, attrs=self.attrs, **environment)

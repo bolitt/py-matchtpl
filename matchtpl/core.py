@@ -12,7 +12,7 @@ import os
 import warnings
 from error import TemplateError
 from constants import VALID_ID as VALID_ID
-
+from runtime import MTRuntime
 
 class MTNode(dict):
     def __init__(self, meta, attrs, orig_ele, kind, children=None, callsite=None):
@@ -99,7 +99,7 @@ class MTemplate:
                 self.triggers.append(node)
             elif node['exp_kind'] == 'code':
                 # call the function immediately
-                node['exp_callsite'](element=None)
+                node['exp_callsite'](MTRuntime(), element=None)
         # print "string:", ele, attrs
         x = MTNode(meta='root', attrs=attrs, orig_ele=ele, kind='root')
         x['exp_children'] = self.triggers
@@ -169,6 +169,54 @@ class MTemplate:
         self.build_node_index(attrs, x)
         return x
 
+    @MTBuild(keyword='callback', kind='tag')
+    def build_callback(self, ele, attrs):
+        # print "script:", ele, attrs
+        ch = py(ele).html()
+        x = MTNode(meta='callback', attrs=attrs, orig_ele=ele, kind='data')
+        x['exp_children'] = ch
+        x['exp_callsite'] = CallbackCallSite(x)
+
+        self.build_node_index(attrs, x)
+        return x
+
+
+class Stack(list):
+    def push(self, item):
+        self.append(item)
+    def peek():
+        return self[-1]
+    def length():
+        return len(self)
+    def is_empty(self):
+        return len(self) == 0
+
+class MTRuntime():
+    def __init__(self, **kwargs):
+        self.template = kwargs.get('template')
+        self.mtcontext = kwargs.get('mtcontext')
+        self._stack = Stack() # running stack
+        
+    @property
+    def template(self):
+        return self._template
+    @template.setter
+    def template(self, val):
+        self._template = val
+
+    @property
+    def mtcontext(self):
+        return self._mtcontext
+    @mtcontext.setter
+    def mtcontext(self, val):
+        self._template = val
+
+    @property
+    def stack(self):
+        return self._stack
+
+        
+
 #######################################################
 class MTemplateParser:
     def __init__(self, template):
@@ -176,15 +224,17 @@ class MTemplateParser:
         
     def parse(self, filename, **options):
         content = _load_file_(filename)
-        env = {'template': self.template,
-               'mtcontext': MTContext, }
-        result = self.template.root(env, content, **options)
+        runtime_kws = {'template': self.template,
+                       'mtcontext': MTContext, }
+        runtime = MTRuntime(**runtime_kws)
+        result = self.template.root(runtime, content, **options)
         return result
 
     def parse_content(self, content, **options):
-        env = {'template': self.template,
-               'mtcontext': MTContext, }
-        result = self.template.root(env, content, **options)
+        runtime_kws = {'template': self.template,
+                       'mtcontext': MTContext, }
+        runtime = MTRuntime(**runtime_kws)
+        result = self.template.root(runtime, content, **options)
         return result
     
 
