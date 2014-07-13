@@ -1,3 +1,20 @@
-1. add local, and remote exopen
+Memo 
 
-2. add callback support 
+======================================
+Change list:
+
+Tian Lin <bolitt@gmail.com> 7/14/2014
+
+======================================
+
+Main:
+1. add local, and remote exopen: src/future/exopen.py
+
+2. add callback support
+
+
+
+Wish to do:
+1. add manage interface: src/future/manage.py
+
+2. add mapred interface: src/future/mapred.py
